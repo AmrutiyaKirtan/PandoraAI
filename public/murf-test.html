@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murf AI TTS Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #333;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background: #444;
+            color: #fff;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        select, input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #444;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        
+        .success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .audio-player {
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .settings-row label {
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Murf AI Text-to-Speech Test</h1>
+        
+        <div class="test-section">
+            <h3>📝 Text Input</h3>
+            <textarea id="textInput" placeholder="Enter text to convert to speech...">Hello! This is a test of the Murf AI text-to-speech service. It provides high-quality, natural-sounding voices for your applications.</textarea>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎵 Voice Selection</h3>
+            <div class="settings-row">
+                <label for="voiceSelect">Voice:</label>
+                <select id="voiceSelect" title="Select voice for text-to-speech">
+                    <option value="en-US-molly">Molly (US English - Female)</option>
+                    <option value="en-US-ken">Ken (US English - Male)</option>
+                    <option value="en-US-amara">Amara (US English - Female)</option>
+                    <option value="en-US-edmund">Edmund (US English - Male)</option>
+                    <option value="en-UK-katie">Katie (UK English - Female)</option>
+                    <option value="en-UK-jaxon">Jaxon (UK English - Male)</option>
+                    <option value="en-AU-mitch">Mitch (Australian - Male)</option>
+                    <option value="it-IT-lorenzo">Lorenzo (Italian - Male)</option>
+                    <option value="es-ES-javier">Javier (Spanish - Male)</option>
+                    <option value="de-DE-ralf">Ralf (German - Male)</option>
+                </select>
+            </div>
+            
+            <div class="settings-row">
+                <label for="styleSelect">Style:</label>
+                <select id="styleSelect" title="Select speaking style">
+                    <option value="Conversational">Conversational</option>
+                    <option value="Narration">Narration</option>
+                    <option value="Promo">Promo</option>
+                    <option value="Newscast">Newscast</option>
+                    <option value="Storytelling">Storytelling</option>
+                    <option value="Calm">Calm</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔊 Generate & Play</h3>
+            <button id="generateButton" onclick="generateSpeech()">Generate Speech</button>
+            <button id="stopButton" onclick="stopAudio()" disabled>Stop Audio</button>
+            <div id="status" class="status info">Ready to generate speech</div>
+            
+            <audio id="audioPlayer" class="audio-player" controls style="display: none;"></audio>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Response Information</h3>
+            <div id="responseInfo" style="background: #444; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+                No response yet...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAudio = null;
+        
+        async function generateSpeech() {
+            const text = document.getElementById('textInput').value.trim();
+            const voiceId = document.getElementById('voiceSelect').value;
+            const style = document.getElementById('styleSelect').value;
+            
+            if (!text) {
+                updateStatus('Please enter some text to convert to speech', 'error');
+                return;
+            }
+            
+            const generateButton = document.getElementById('generateButton');
+            const stopButton = document.getElementById('stopButton');
+            const audioPlayer = document.getElementById('audioPlayer');
+            
+            // Update UI
+            generateButton.disabled = true;
+            stopButton.disabled = false;
+            updateStatus('Generating speech...', 'info');
+            
+            try {
+                const response = await fetch('/murf-tts', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        text: text,
+                        voiceId: voiceId,
+                        style: style
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Update response info
+                document.getElementById('responseInfo').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.audio) {
+                    updateStatus('Speech generated successfully! Playing...', 'success');
+                    
+                    // Convert base64 to audio and play
+                    const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: data.audioType });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.style.display = 'block';
+                    currentAudio = audioPlayer;
+                    
+                    // Play audio
+                    await audioPlayer.play();
+                    
+                    // Clean up when finished
+                    audioPlayer.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        updateStatus('Audio playback completed', 'info');
+                        generateButton.disabled = false;
+                        stopButton.disabled = true;
+                    };
+                    
+                } else {
+                    updateStatus('Failed to generate speech: ' + (data.message || 'Unknown error'), 'error');
+                    generateButton.disabled = false;
+                    stopButton.disabled = true;
+                }
+
+            } catch (error) {
+                console.error('Error generating speech:', error);
+                updateStatus('Error: ' + error.message, 'error');
+                generateButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+        
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio.style.display = 'none';
+                currentAudio = null;
+            }
+            
+            document.getElementById('generateButton').disabled = false;
+            document.getElementById('stopButton').disabled = true;
+            updateStatus('Audio stopped', 'info');
+        }
+        
+        function updateStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        // Allow Enter key to generate speech
+        document.getElementById('textInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                generateSpeech();
+            }
+        });
+    </script>
+</body>
+</html> 

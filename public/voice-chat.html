@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pandora AI - Voice Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary-dark: #0F1115;
+      --secondary-dark: #17191E;
+      --tertiary-dark: #1D1F24;
+      --darker-element: #2A2D36;
+      --accent-color: #E1B12C;
+      --accent-color-light: #F1C40F;
+      --text-primary: #F5F6FA;
+      --text-secondary: #818396;
+      --glow-color: rgba(225, 177, 44, 0.2);
+      --recording-red: #E74C3C;
+      --recording-glow: rgba(231, 76, 60, 0.3);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--primary-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: var(--secondary-dark);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    
+    .logo-container {
+      padding: 25px;
+    }
+    
+    .logo {
+      background: var(--tertiary-dark);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-color);
+      letter-spacing: 1px;
+    }
+    
+    .nav-items {
+      display: flex;
+      flex-direction: column;
+      padding: 20px 25px;
+      gap: 10px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .nav-item.active {
+      background: rgba(225, 177, 44, 0.15);
+    }
+    
+    .nav-item .icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+    
+    .nav-item.active .icon {
+      background: var(--accent-color);
+    }
+    
+    .nav-item:not(.active) .icon {
+      background: var(--text-secondary);
+      opacity: 0.7;
+    }
+    
+    .nav-item.active .nav-text {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    .nav-item:not(.active) .nav-text {
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
+    
+    .profile {
+      margin-top: auto;
+      margin-bottom: 25px;
+      padding: 0 25px;
+    }
+    
+    .profile-card {
+      background: var(--tertiary-dark);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+
+    }
+    
+    .avatar {
+      width: 30px;
+      height: 30px;
+      background: var(--darker-element);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+    }
+    
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .profile-name {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    
+    .profile-plan {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      flex: 1;
+      margin-left: 240px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-header {
+      height: 80px;
+      background: var(--secondary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .action-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--tertiary-dark);
+      border: 1px solid var(--darker-element);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+      background-image: radial-gradient(circle at top right, rgba(225, 177, 44, 0.1), transparent 70%);
+      position: relative;
+    }
+    
+    .message-container {
+      display: flex;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .message-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+    
+    .bot-avatar {
+      background: var(--accent-color);
+      color: var(--tertiary-dark);
+    }
+    
+    .user-avatar {
+      background: var(--darker-element);
+      margin-left: 15px;
+      margin-right: 0;
+    }
+    
+    .message-content {
+      background: var(--tertiary-dark);
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 70%;
+    }
+    
+    .user-message .message-content {
+      background: rgba(225, 177, 44, 0.15);
+      border: 1px solid rgba(225, 177, 44, 0.05);
+    }
+    
+    .user-message {
+      flex-direction: row-reverse;
+      margin-left: auto;
+    }
+    
+    .message-text {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    
+    .message-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    /* Voice-specific styles */
+    .voice-controls {
+      background: #1a1a1a;
+      border-top: 1px solid #333;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .voice-button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .voice-button {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: var(--tertiary-dark);
+      border: 3px solid var(--darker-element);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .voice-button:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 20px var(--glow-color);
+    }
+    
+    .voice-button.recording {
+      background: var(--recording-red);
+      border-color: var(--recording-red);
+      box-shadow: 0 0 30px var(--recording-glow);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .voice-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: relative;
+    }
+    
+    .voice-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: var(--tertiary-dark);
+      border-radius: 50%;
+    }
+    
+    .voice-button.recording .voice-icon {
+      background: var(--text-primary);
+    }
+    
+    .voice-status {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    
+    .voice-status.recording {
+      color: var(--recording-red);
+      font-weight: 600;
+    }
+    
+    /* Voice visualization */
+    .voice-visualizer {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 20px;
+    }
+    
+    .voice-bar {
+      width: 2px;
+      height: 15px;
+      background: var(--text-secondary);
+      border-radius: 1px;
+      transition: all 0.1s ease;
+    }
+    
+    .voice-bar.active {
+      background: var(--accent-color);
+      height: 20px;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(225, 177, 44, 0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(225, 177, 44, 0.5);
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+        overflow: hidden;
+      }
+      
+      .logo-text, .nav-text, .profile-info {
+        display: none;
+      }
+      
+      .main-content {
+        margin-left: 70px;
+      }
+      
+      .chat-header, .voice-controls {
+        padding: 0 20px;
+      }
+      
+      .voice-controls {
+        padding: 15px 20px;
+        height: 120px;
+        min-height: 120px;
+      }
+      
+      .chat-messages {
+        padding: 20px;
+      }
+      
+      .message-content {
+        max-width: 85%;
+      }
+      
+      .voice-button {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .voice-icon {
+        width: 18px;
+        height: 18px;
+      }
+      
+      .voice-status {
+        font-size: 12px;
+      }
+    }
+    
+    .text-input-container {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .text-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    
+    .text-input:focus {
+      border-color: #007bff;
+    }
+    
+    .send-button {
+      padding: 12px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    
+    .send-button:hover {
+      background: #0056b3;
+    }
+    
+    .send-button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    
+    /* Profile Popup Styles */
+    .profile-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .profile-popup-card {
+      background: #1D1F24;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(225, 177, 44, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .profile-popup-heading {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: #E1B12C;
+      margin-bottom: 20px;
+    }
+    
+    .profile-popup-item {
+      margin-bottom: 18px;
+    }
+    
+    .profile-popup-item .label {
+      font-size: 13px;
+      color: #818396;
+      margin-bottom: 5px;
+    }
+    
+    .profile-popup-item .value {
+      background: #2A2D36;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #F5F6FA;
+    }
+    
+    .popup-close-btn {
+      text-align: center;
+      margin-top: 25px;
+    }
+    
+    .popup-close-btn button {
+      padding: 10px 25px;
+      border: none;
+      background: #E1B12C;
+      color: #1D1F24;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .popup-close-btn button:hover {
+      background: #F1C40F;
+    }
+    
+    /* Settings Popup Styles */
+    .settings-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .settings-popup-card {
+      background: #1D1F24;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(225, 177, 44, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .settings-popup-heading {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: #E1B12C;
+      margin-bottom: 20px;
+    }
+    
+    .settings-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 10px;
+    }
+    
+    .settings-option:hover {
+      background: rgba(225, 177, 44, 0.1);
+    }
+    
+    .settings-option-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .settings-option-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: #F5F6FA;
+      text-align: center;
+    }
+    
+    .logout-option {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+    
+    .logout-option .settings-option-text {
+      color: #ff6b6b;
+    }
+    
+    .settings-close-btn {
+      text-align: center;
+      margin-top: 25px;
+    }
+    
+    .settings-close-btn button {
+      padding: 10px 25px;
+      border: none;
+      background: #E1B12C;
+      color: #1D1F24;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .settings-close-btn button:hover {
+      background: #F1C40F;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <div class="logo">
+        <div class="logo-text">PANDORA AI</div>
+      </div>
+    </div>
+    
+    <div class="nav-items">
+      <a href="index.html" class="nav-item">
+        <div class="icon"></div>
+        <div class="nav-text">Chat</div>
+      </a>
+      <a href="voice-chat.html" class="nav-item active">
+        <div class="icon"></div>
+        <div class="nav-text">Voice Chat</div>
+      </a>
+    </div>
+    
+    <div class="profile">
+      <div class="profile-card" onclick="openProfile()">
+        <div class="avatar">U</div>
+        <div class="profile-info">
+          <div class="profile-name">User Profile</div>
+          <div class="profile-plan">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="chat-header">
+      <div class="header-title">Voice Conversation</div>
+      <div class="header-actions">
+        <div class="action-button" onclick="openProfile()">👤</div>
+        <div class="action-button" onclick="openSettings()">⚙️</div>
+      </div>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+      <!-- Bot welcome message -->
+      <div class="message-container">
+        <div class="message-avatar bot-avatar">P</div>
+        <div class="message-content">
+          <div class="message-text">Hello! I'm ready for our voice conversation. Click the microphone button below to start speaking.</div>
+          <div class="message-time">10:24 AM</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Voice Controls -->
+    <div class="voice-controls">
+      <div class="voice-button-container">
+        <div class="voice-button" id="voiceButton">
+          <div class="voice-icon"></div>
+        </div>
+        <div class="voice-status" id="voiceStatus">Click to start recording</div>
+        <div class="voice-visualizer" id="voiceVisualizer">
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+          <div class="voice-bar"></div>
+        </div>
+      </div>
+      
+      <!-- Text Input Option -->
+      <div class="text-input-container">
+        <input type="text" id="textInput" placeholder="Or type your message here..." class="text-input">
+        <button id="sendButton" class="send-button">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Popup -->
+  <div id="profilePopup" class="profile-popup-overlay">
+    <div class="profile-popup-card">
+      <div class="profile-popup-heading">👤 User Profile</div>
+      <div class="profile-popup-item">
+        <div class="label">Name</div>
+        <div class="value" id="user-name">Loading...</div>
+      </div>
+      <div class="profile-popup-item">
+        <div class="label">Email</div>
+        <div class="value" id="user-email">Loading...</div>
+      </div>
+      <div class="profile-popup-item">
+        <div class="label">Subscription Plan</div>
+        <div class="value">Pro Plan</div>
+      </div>
+      <div class="popup-close-btn">
+        <button onclick="closeProfile()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Popup -->
+  <div id="settingsPopup" class="settings-popup-overlay">
+    <div class="settings-popup-card">
+      <div class="settings-popup-heading">⚙️ Settings</div>
+      <div class="settings-option" onclick="resetChat()">
+        <div class="settings-option-icon">🔄</div>
+        <div class="settings-option-text">Reset Chat</div>
+      </div>
+      <div class="settings-option" onclick="logout()">
+        <div class="settings-option-icon">🗑️</div>
+        <div class="settings-option-text">Logout</div>
+      </div>
+      <div class="logout-option">
+        <div class="settings-option-text">Are you sure you want to logout?</div>
+      </div>
+      <div class="settings-close-btn">
+        <button onclick="closeSettings()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
+    const voiceButton = document.getElementById('voiceButton');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceVisualizer = document.getElementById('voiceVisualizer');
+    const voiceBars = document.querySelectorAll('.voice-bar');
+    const textInput = document.getElementById('textInput');
+    const sendButton = document.getElementById('sendButton');
+    
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+
+    function addMessage(message, isUser) {
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const messageContainer = document.createElement('div');
+      messageContainer.className = `message-container ${isUser ? 'user-message' : ''}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = `message-avatar ${isUser ? 'user-avatar' : 'bot-avatar'}`;
+      avatar.textContent = isUser ? 'U' : 'P';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const messageText = document.createElement('div');
+      messageText.className = 'message-text';
+      messageText.textContent = message;
+      
+      const messageTime = document.createElement('div');
+      messageTime.className = 'message-time';
+      messageTime.textContent = time;
+      
+      content.appendChild(messageText);
+      content.appendChild(messageTime);
+      messageContainer.appendChild(avatar);
+      messageContainer.appendChild(content);
+      
+      chatMessages.appendChild(messageContainer);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function updateVoiceVisualizer() {
+      if (isRecording) {
+        voiceBars.forEach((bar, index) => {
+          setTimeout(() => {
+            bar.classList.add('active');
+            setTimeout(() => {
+              bar.classList.remove('active');
+            }, 100);
+          }, index * 50);
+        });
+      }
+    }
+
+    async function startRecording() {
+      try {
+        // Use speech recognition directly instead of recording audio
+        voiceStatus.textContent = 'Listening... Click to stop';
+        voiceStatus.classList.add('recording');
+        voiceButton.classList.add('recording');
+        isRecording = true;
+        
+        // Start visualizer animation
+        const visualizerInterval = setInterval(() => {
+          if (isRecording) {
+            updateVoiceVisualizer();
+          } else {
+            clearInterval(visualizerInterval);
+          }
+        }, 200);
+
+        // Start speech recognition
+        const transcribedText = await transcribeSpeech();
+        
+        if (transcribedText) {
+          // Add user message to chat
+          addMessage(transcribedText, true);
+          
+          // Get AI response
+          try {
+            const response = await fetch('/message', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({ 
+                message: transcribedText
+              }),
+            });
+
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const data = await response.json();
+            
+            if (data.text) {
+              // Add the AI response to chat
+              addMessage(data.text, false);
+              
+              // Use Murf AI to speak the response
+              await speakWithMurf(data.text);
+            } else {
+              addMessage('Sorry, I couldn\'t process your message. Please try again.', false);
+            }
+
+          } catch (error) {
+            console.error('Error processing message:', error);
+            addMessage('Error processing message. Please try again.', false);
+          }
+        } else {
+          addMessage('Sorry, I couldn\'t understand your voice. Please try again.', false);
+        }
+
+        // Reset recording state
+        stopRecording();
+
+      } catch (error) {
+        console.error('Error accessing microphone:', error);
+        addMessage('Unable to access microphone. Please check your permissions.', false);
+        stopRecording();
+      }
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      voiceButton.classList.remove('recording');
+      voiceStatus.textContent = 'Click to start recording';
+      voiceStatus.classList.remove('recording');
+    }
+
+    // Speech-to-Text function using Web Speech API
+    function transcribeSpeech() {
+      return new Promise((resolve, reject) => {
+        // Check if speech recognition is supported
+        if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+          reject(new Error('Speech recognition not supported in this browser. Please use Chrome, Firefox, or Edge.'));
+          return;
+        }
+
+        // Use the appropriate speech recognition API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        // Configure recognition settings
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.maxAlternatives = 1;
+
+        let hasResult = false;
+
+        // Event handlers
+        recognition.onstart = () => {
+          voiceStatus.textContent = 'Listening... Click to stop';
+        };
+
+        recognition.onresult = (event) => {
+          hasResult = true;
+          const transcript = event.results[0][0].transcript;
+          voiceStatus.textContent = 'Processing...';
+          resolve(transcript);
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          let errorMessage = 'Speech recognition error';
+          
+          switch (event.error) {
+            case 'no-speech':
+              errorMessage = 'No speech detected. Please try speaking again.';
+              break;
+            case 'audio-capture':
+              errorMessage = 'Microphone not found or access denied. Please check your microphone permissions.';
+              break;
+            case 'not-allowed':
+              errorMessage = 'Microphone access denied. Please allow microphone access in your browser settings.';
+              break;
+            case 'network':
+              errorMessage = 'Network error occurred. Please check your internet connection.';
+              break;
+            case 'service-not-allowed':
+              errorMessage = 'Speech recognition service not allowed.';
+              break;
+            default:
+              errorMessage = `Error: ${event.error}`;
+          }
+          
+          if (!hasResult) {
+            reject(new Error(errorMessage));
+          }
+        };
+
+        recognition.onend = () => {
+          if (!hasResult) {
+            // If no result and user clicked stop, resolve with null
+            resolve(null);
+          }
+        };
+
+        // Start recognition
+        try {
+          recognition.start();
+          // Store recognition instance for stopping
+          window.currentRecognition = recognition;
+        } catch (error) {
+          reject(new Error('Failed to start speech recognition: ' + error.message));
+        }
+      });
+    }
+
+    // Web Speech API function
+    function speakText(text) {
+      return new Promise((resolve, reject) => {
+        // Check if speech synthesis is supported
+        if (!window.speechSynthesis) {
+          console.error('Speech synthesis not supported');
+          reject(new Error('Speech synthesis not supported'));
+          return;
+        }
+
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+
+        // Create utterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Configure voice settings
+        utterance.volume = 0.8; // 0 to 1
+        utterance.rate = 0.9;   // 0.1 to 10
+        utterance.pitch = 1;    // 0 to 2
+        
+        // Try to use a female voice if available
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(voice => 
+          voice.name.includes('female') || 
+          voice.name.includes('Female') ||
+          voice.name.includes('Samantha') ||
+          voice.name.includes('Victoria')
+        );
+        
+        if (femaleVoice) {
+          utterance.voice = femaleVoice;
+        }
+
+        // Event handlers
+        utterance.onstart = () => {
+          voiceStatus.textContent = 'Speaking...';
+        };
+
+        utterance.onend = () => {
+          voiceStatus.textContent = 'Click to start recording';
+          resolve();
+        };
+
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event.error);
+          voiceStatus.textContent = 'Click to start recording';
+          reject(event.error);
+        };
+
+        // Start speaking
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+    // Murf AI Text-to-Speech function
+    async function speakWithMurf(text, voiceId = 'en-US-molly') {
+      try {
+        voiceStatus.textContent = 'Generating audio...';
+        
+        const response = await fetch('/murf-tts', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ 
+            text: text,
+            voiceId: voiceId,
+            style: 'Conversational'
+          }),
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+        
+        if (data.success && data.audio) {
+          // Play the generated audio
+          await playMurfAudio(data.audio, data.audioType);
+        } else {
+          console.error('Murf TTS failed:', data.message);
+          // Fallback to Web Speech API
+          await speakText(text);
+        }
+      } catch (error) {
+        console.error('Murf TTS error:', error);
+        // Fallback to Web Speech API
+        await speakText(text);
+      }
+    }
+
+    // Play Murf AI audio
+    async function playMurfAudio(audioData, audioType) {
+      try {
+        // Convert base64 audio data to blob
+        const audioBlob = new Blob([Uint8Array.from(atob(audioData), c => c.charCodeAt(0))], { type: audioType });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Create and play audio
+        const audio = new Audio(audioUrl);
+        audio.volume = 0.8;
+        
+        // Update status while playing
+        voiceStatus.textContent = 'Playing response...';
+        
+        await audio.play();
+        
+        // Clean up after playing
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          voiceStatus.textContent = 'Click to start recording';
+        };
+        
+      } catch (error) {
+        console.error('Error playing Murf audio:', error);
+        voiceStatus.textContent = 'Click to start recording';
+      }
+    }
+
+    voiceButton.addEventListener('click', () => {
+      if (isRecording) {
+        // Stop current recognition if running
+        if (window.currentRecognition) {
+          window.currentRecognition.stop();
+          window.currentRecognition = null;
+        }
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+
+    // Add loading indicator for voice processing
+    function addLoadingIndicator() {
+      const loadingContainer = document.createElement('div');
+      loadingContainer.className = 'message-container';
+      loadingContainer.id = 'loadingIndicator';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar bot-avatar';
+      avatar.textContent = 'P';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'typing-indicator';
+      typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+      
+      content.appendChild(typingIndicator);
+      loadingContainer.appendChild(avatar);
+      loadingContainer.appendChild(content);
+      
+      chatMessages.appendChild(loadingContainer);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeLoadingIndicator() {
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      if (loadingIndicator) loadingIndicator.remove();
+    }
+
+    // Text input functionality
+    async function sendTextMessage() {
+      const message = textInput.value.trim();
+      if (!message) return;
+      
+      // Add user message to chat
+      addMessage(message, true);
+      textInput.value = '';
+      
+      // Disable input while processing
+      textInput.disabled = true;
+      sendButton.disabled = true;
+      
+      try {
+        // Get AI response
+        const response = await fetch('/message', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ message }),
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+        
+        if (data.text) {
+          // Add AI response to chat
+          addMessage(data.text, false);
+          
+          // Speak the response using Murf AI
+          await speakWithMurf(data.text);
+        } else {
+          addMessage('Sorry, I couldn\'t process your message. Please try again.', false);
+        }
+
+      } catch (error) {
+        console.error('Error sending message:', error);
+        addMessage('Error processing message. Please try again.', false);
+      } finally {
+        // Re-enable input
+        textInput.disabled = false;
+        sendButton.disabled = false;
+        textInput.focus();
+      }
+    }
+
+    // Event listeners for text input
+    sendButton.addEventListener('click', sendTextMessage);
+    textInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendTextMessage();
+      }
+    });
+
+    // User Profile Popup Functions
+    function openProfile() {
+      document.getElementById('profilePopup').style.display = 'flex';
+      // Fetch user info from backend
+      fetch('/user-info')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('user-name').textContent = data.name || 'Unknown';
+          document.getElementById('user-email').textContent = data.email || 'Unknown';
+          // If you want to update sidebar name, uncomment below:
+          // document.getElementById('sidebar-user-name').textContent = data.name || 'User Profile';
+        })
+        .catch(() => {
+          document.getElementById('user-name').textContent = 'Unknown';
+          document.getElementById('user-email').textContent = 'Unknown';
+        });
+    }
+    function closeProfile() {
+      document.getElementById('profilePopup').style.display = 'none';
+    }
+
+    // Settings Popup Functions
+    function openSettings() {
+      document.getElementById('settingsPopup').style.display = 'flex';
+    }
+    function closeSettings() {
+      document.getElementById('settingsPopup').style.display = 'none';
+    }
+    
+    // Logout function
+    async function logout() {
+      try {
+        const response = await fetch('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          // Redirect to signup page
+          window.location.href = '/signup.html';
+        } else {
+          console.error('Logout failed');
+          // Still redirect to signup page even if logout fails
+          window.location.href = '/signup.html';
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Redirect to signup page even if there's an error
+        window.location.href = '/signup.html';
+      }
+    }
+    
+    // Reset chat function
+    function resetChat() {
+      // Clear all messages except the first welcome message
+      const messages = chatMessages.querySelectorAll('.message-container');
+      for (let i = 1; i < messages.length; i++) {
+        messages[i].remove();
+      }
+      closeSettings();
+    }
+    
+    // Add click handlers for settings options
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutOption = document.querySelector('.settings-option:nth-child(2)');
+      if (logoutOption) {
+        logoutOption.addEventListener('click', logout);
+      }
+    });
+  </script>
+</body>
+</html> 

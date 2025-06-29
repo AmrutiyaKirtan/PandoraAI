@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Voice Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #333;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        button.recording {
+            background: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            white-space: pre-line;
+        }
+        
+        .success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .solution {
+            background: #6f42c1;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .solution h4 {
+            margin-top: 0;
+            color: #ffc107;
+        }
+        
+        .solution ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .solution li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Simple Voice Test</h1>
+        
+        <div class="test-section">
+            <h3>🔍 Step 1: Basic Microphone Test</h3>
+            <p>This test only checks if your microphone is accessible, without using speech recognition.</p>
+            <button onclick="testMicrophone()">Test Microphone Access</button>
+            <div id="microphoneStatus" class="status info">Click to test microphone access</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Step 2: Simple Speech Recognition</h3>
+            <p>This uses a simpler approach to test speech recognition.</p>
+            <button id="startBtn" onclick="startSimpleRecognition()" disabled>Start Simple Recognition</button>
+            <button id="stopBtn" onclick="stopRecognition()" disabled>Stop Recognition</button>
+            <div id="recognitionStatus" class="status info">Complete Step 1 first</div>
+            <div id="transcript" style="background: #444; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <strong>Transcript:</strong> <span id="transcriptText">No speech detected yet...</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>💡 Alternative Solutions</h3>
+            <div class="solution">
+                <h4>If speech recognition doesn't work:</h4>
+                <ul>
+                    <li><strong>Use Chrome:</strong> Speech recognition works best in Chrome</li>
+                    <li><strong>Check HTTPS:</strong> Some browsers require HTTPS for microphone access</li>
+                    <li><strong>Try different browser:</strong> Firefox, Edge, or Safari</li>
+                    <li><strong>Use text input:</strong> The voice chat also has a text input option</li>
+                    <li><strong>Test Murf AI:</strong> Try the text-to-speech test page</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔗 Quick Links</h3>
+            <button onclick="window.open('/murf-test.html', '_blank')">Test Murf AI TTS</button>
+            <button onclick="window.open('/voice-chat.html', '_blank')">Voice Chat Page</button>
+            <button onclick="window.open('/index.html', '_blank')">Main Chat</button>
+        </div>
+    </div>
+
+    <script>
+        let recognition = null;
+        let isListening = false;
+        
+        async function testMicrophone() {
+            const status = document.getElementById('microphoneStatus');
+            const startBtn = document.getElementById('startBtn');
+            
+            try {
+                status.textContent = 'Testing microphone access...';
+                status.className = 'status info';
+                
+                // Request microphone access
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Stop the stream immediately
+                stream.getTracks().forEach(track => track.stop());
+                
+                status.textContent = '✅ Microphone access granted successfully!\n\nYour microphone is working correctly.';
+                status.className = 'status success';
+                
+                // Enable speech recognition
+                startBtn.disabled = false;
+                
+            } catch (error) {
+                let errorMessage = '❌ Microphone access failed\n\n';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += 'Microphone access denied. Please:\n1. Click the lock icon in your address bar\n2. Set microphone to "Allow"\n3. Refresh the page';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'No microphone found. Please connect a microphone.';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage += 'Microphone not supported in this browser.';
+                } else {
+                    errorMessage += `Error: ${error.message}`;
+                }
+                
+                status.textContent = errorMessage;
+                status.className = 'status error';
+            }
+        }
+        
+        function startSimpleRecognition() {
+            if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+                updateRecognitionStatus('Speech recognition not supported in this browser. Please use Chrome.', 'error');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            // Simple configuration
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            recognition.maxAlternatives = 1;
+            
+            recognition.onstart = () => {
+                isListening = true;
+                updateRecognitionStatus('🎤 Listening... Speak clearly now!', 'info');
+                updateButtonState(true);
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('transcriptText').textContent = transcript;
+                updateRecognitionStatus('✅ Speech recognized: ' + transcript, 'success');
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                let errorMessage = 'Speech recognition failed: ' + event.error;
+                
+                if (event.error === 'network') {
+                    errorMessage = 'Network error. This might be due to:\n• Internet connection issues\n• Speech recognition service unavailable\n• Browser security settings\n\nTry using Chrome or refreshing the page.';
+                }
+                
+                updateRecognitionStatus(errorMessage, 'error');
+                updateButtonState(false);
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                updateRecognitionStatus('Recognition ended', 'info');
+                updateButtonState(false);
+            };
+            
+            try {
+                recognition.start();
+            } catch (error) {
+                updateRecognitionStatus('Failed to start: ' + error.message, 'error');
+            }
+        }
+        
+        function stopRecognition() {
+            if (recognition && isListening) {
+                recognition.stop();
+            }
+        }
+        
+        function updateRecognitionStatus(message, type) {
+            const status = document.getElementById('recognitionStatus');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        function updateButtonState(listening) {
+            document.getElementById('startBtn').disabled = listening;
+            document.getElementById('stopBtn').disabled = !listening;
+        }
+    </script>
+</body>
+</html> 

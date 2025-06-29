@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pandora AI - Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary-dark: #0F1115;
+      --secondary-dark: #17191E;
+      --tertiary-dark: #1D1F24;
+      --light-color: #F5F6FA;
+      --accent-color: #E1B12C;
+      --accent-color-light: #F1C40F;
+      --muted-color: #818396;
+      --glow-color: rgba(245, 246, 250, 0.15);
+      --glow-accent: rgba(225, 177, 44, 0.3);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--primary-dark);
+      color: var(--light-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    /* Left panel */
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, var(--secondary-dark), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
+      z-index: 1;
+    }
+    
+    .left-content {
+      max-width: 500px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-color);
+      letter-spacing: 1px;
+      margin-bottom: 40px;
+      text-shadow: 0 0 15px var(--glow-accent);
+    }
+    
+    .tagline {
+      font-size: 40px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 30px;
+      background: linear-gradient(to right, var(--light-color), rgba(245, 246, 250, 0.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .description {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted-color);
+      margin-bottom: 40px;
+    }
+    
+    /* Dystopian elements */
+    .building-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: repeating-linear-gradient(90deg, 
+        rgba(23, 25, 30, 0) 0px, 
+        rgba(23, 25, 30, 0) 20px, 
+        rgba(23, 25, 30, 0.7) 20px, 
+        rgba(23, 25, 30, 0.7) 21px);
+      opacity: 0.5;
+      z-index: 1;
+    }
+    
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(245, 246, 250, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 246, 250, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 1;
+    }
+    
+    .circular-structure {
+      position: absolute;
+      top: -250px;
+      left: -250px;
+      width: 500px;
+      height: 500px;
+      border: 1px solid rgba(245, 246, 250, 0.1);
+      border-radius: 50%;
+      box-shadow: 0 0 40px var(--glow-color);
+      z-index: 0;
+    }
+    
+    .circular-structure:before {
+      content: '';
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      right: 50px;
+      bottom: 50px;
+      border: 1px solid rgba(245, 246, 250, 0.1);
+      border-radius: 50%;
+    }
+    
+    .circular-structure:after {
+      content: '';
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      right: 100px;
+      bottom: 100px;
+      border: 1px solid rgba(245, 246, 250, 0.1);
+      border-radius: 50%;
+    }
+    
+    .vertical-lines {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: space-around;
+      z-index: 0;
+    }
+    
+    .vertical-line {
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, 
+        rgba(245, 246, 250, 0), 
+        rgba(245, 246, 250, 0.1), 
+        rgba(245, 246, 250, 0));
+    }
+    
+    /* Right panel - form */
+    .right-panel {
+      width: 500px;
+      background: var(--tertiary-dark);
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+    
+    .form-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    .form-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .form-subtitle {
+      font-size: 14px;
+      color: var(--muted-color);
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      background: rgba(15, 17, 21, 0.5);
+      border: 1px solid rgba(245, 246, 250, 0.1);
+      border-radius: 6px;
+      padding: 15px;
+      color: var(--light-color);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(225, 177, 44, 0.2);
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 42px;
+      cursor: pointer;
+      color: var(--muted-color);
+      font-size: 14px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .checkbox-input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: rgba(15, 17, 21, 0.5);
+      border: 1px solid rgba(245, 246, 250, 0.2);
+      border-radius: 4px;
+      margin-right: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .checkbox-input:checked:after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 6px;
+      height: 10px;
+      border: solid var(--accent-color);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    
+    .checkbox-label {
+      font-size: 14px;
+      color: var(--muted-color);
+    }
+    
+    .checkbox-label a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(45deg, var(--accent-color), var(--accent-color-light));
+      color: var(--tertiary-dark);
+      border: none;
+      border-radius: 6px;
+      padding: 15px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.8s ease;
+    }
+    
+    .btn-primary:hover:before {
+      left: 100%;
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 0 20px var(--glow-accent);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 30px 0;
+      color: var(--muted-color);
+      font-size: 14px;
+    }
+    
+    .divider:before,
+    .divider:after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(245, 246, 250, 0.1);
+    }
+    
+    .divider:before {
+      margin-right: 15px;
+    }
+    
+    .divider:after {
+      margin-left: 15px;
+    }
+    
+    .social-login {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .social-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 17, 21, 0.5);
+      border: 1px solid rgba(245, 246, 250, 0.1);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .social-btn:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px rgba(225, 177, 44, 0.1);
+    }
+    
+    .login-link {
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted-color);
+    }
+    
+    .login-link a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+    
+    /* Glowing edge effect */
+    .edge-glow {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, 
+        rgba(225, 177, 44, 0), 
+        var(--accent-color), 
+        rgba(225, 177, 44, 0));
+      box-shadow: 0 0 20px var(--glow-accent);
+      z-index: 5;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .container {
+        flex-direction: column;
+      }
+      .left-panel {
+        display: none;
+      }
+      .right-panel {
+        width: 100%;
+        min-height: 100vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Decorative left panel -->
+    <div class="left-panel">
+      <div class="circular-structure"></div>
+      <div class="building-overlay"></div>
+      <div class="grid-overlay"></div>
+      <div class="vertical-lines">
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+      </div>
+      <div class="left-content">
+        <div class="logo">PANDORA AI</div>
+        <h1 class="tagline"></h1>
+        <p class="description">
+          Access the most advanced AI system authorized for civilian use. Pandora AI provides computational power once reserved for governmental entities.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Form panel -->
+    <div class="right-panel">
+      <div class="edge-glow"></div>
+      <div class="form-header">
+        <h2 class="form-title">Create Your Account</h2>
+        <p class="form-subtitle">Enter your credentials to access the network</p>
+      </div>
+      
+      <div id="signup-form">
+        <form id="form-signup">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Enter your name" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Create password" required>
+            <span class="password-toggle">Show</span>
+          </div>
+          
+          <div class="checkbox-group">
+            <input type="checkbox" class="checkbox-input" id="terms" name="terms" required>
+            <label class="checkbox-label" for="terms">
+              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </label>
+          </div>
+          
+          <button type="submit" class="btn-primary">Sign Up</button>
+          
+          <div class="divider">or continue with</div>
+          
+          <div class="social-login">
+            <div class="social-btn">Google</div>
+            <div class="social-btn">Apple</div>
+          </div>
+          
+          <div class="login-link">
+            Already have an account? <a href="#" id="show-signin">Sign In</a>
+          </div>
+        </form>
+      </div>
+
+      <div id="signin-form" style="display:none;">
+        <form id="form-signin">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+          </div>
+          
+          <button type="submit" class="btn-primary">Sign In</button>
+          
+          <div class="login-link">
+            Don't have an account? <a href="#" id="show-signup">Sign Up</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('show-signin').onclick = function(e) {
+      e.preventDefault();
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('signin-form').style.display = 'block';
+    };
+    document.getElementById('show-signup').onclick = function(e) {
+      e.preventDefault();
+      document.getElementById('signin-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+    };
+
+    // Handle signup form submission
+    document.getElementById('form-signup').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password')
+      };
+
+      try {
+        const response = await fetch('/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Redirect to index.html after successful signup
+          window.location.href = '/index.html';
+        } else {
+          alert(result.error || 'Signup failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during signup');
+      }
+    });
+
+    // Handle signin form submission
+    document.getElementById('form-signin').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = {
+        email: formData.get('email'),
+        password: formData.get('password')
+      };
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Redirect to index.html after successful signin
+          window.location.href = '/index.html';
+        } else {
+          alert(result.error || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during login');
+      }
+    });
+  </script>
+</body>
+</html>
