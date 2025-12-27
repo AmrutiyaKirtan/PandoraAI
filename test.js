@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 });
 
 async function main() {
-   const ai = new GoogleGenAI({ apiKey: "AIzaSyBMa2hRCbDsdqw-Vm7WhJ8xsRgEtrjrRLs" });
+   const ai = new GoogleGenAI({ apiKey: "your_api_key_here" });
 
    console.log("🤖 Welcome to AI Conversation! Type 'quit' to exit.");
    console.log("💬 Start chatting with the AI...\n");
