@@ -92,7 +92,7 @@ app.post('/logout', (req, res) => {
 });
 
 // Initialize Gemini AI
-const ai = new GoogleGenAI({ apiKey: "AIzaSyBMa2hRCbDsdqw-Vm7WhJ8xsRgEtrjrRLs" });
+const ai = new GoogleGenAI({ apiKey: "your_api_key_here" });
 
 let chat = null;
 
